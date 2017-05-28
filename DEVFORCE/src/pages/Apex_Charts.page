@@ -1,0 +1,16 @@
+<apex:page > 
+ 
+  <script>
+    // Build the chart data array in JavaScript
+    var dataArray = new Array();
+    dataArray.push({'data1':33,'data2':66,'data3':80,'name':'Jan'});
+    dataArray.push({'data1':33,'data2':66,'data3':80,'name':'Feb'});
+    // ...
+    </script>
+
+<apex:chart height="250" width="450" animate="true" data="dataArray">
+<apex:axis type="Gauge" position="gauge" title="Transaction Load" margin="5" grid="true"
+        minimum="0" maximum="100" steps="10"/>
+    <apex:gaugeSeries dataField="data1" donut="70" colorSet="#0e62a6,#d5d2cd"  highlight="false" />
+</apex:chart>
+ </apex:page>

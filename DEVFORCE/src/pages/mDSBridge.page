@@ -1,0 +1,52 @@
+<apex:page id="config" controller="ConfigurationController" >
+    <apex:form >
+        <apex:pageBlock title="mDS Configuration">
+            <apex:pageMessages />
+            <apex:pageBlockSection >
+                mDS Server Address (default: api.connector.mbed.org)<apex:inputText value="{!Server}" style="width:100px"/>
+                mDS Domain for your account (default: domain)<apex:inputText value="{!Domain}" style="width:200px"/>
+                <!-- mdS REST port (default: 80)<apex:inputText value="{!Port}" style="width:40px"/> -->
+                <!-- Use API Tokens (default: checked)<apex:inputCheckbox onClick="{!UseTokens}" rendered="true" selected="{!UseTokens}" /> -->
+                <!-- API Token<apex:inputText value="{!Token}" style="width:310px"/> -->
+                <!-- Site URL domain name<apex:inputText value="{!SiteURL}" style="width:300px"/> -->
+                Client Username<apex:inputText value="{!Username}" style="width:80px"/>
+                Client Password<apex:inputText value="{!Password}" style="width:80px"/>
+            </apex:pageBlockSection>
+       </apex:pageBlock>
+       <apex:pageBlock title="Configuration Actions">
+            <apex:pageBlockSection >
+                Reset mDS Bridge Configuration to default<apex:commandButton value="Reset Config..." action="{!ClearConfiguration}" />
+                Save mDS Bridge Configuration<apex:commandButton value="Save Config..." action="{!SaveConfiguration}"/>
+                Clear mDS Endpoints<apex:commandButton value="Clear Endpoints..." action="{!ClearEndpoints}"/>
+                Discover mDS Endpoints<apex:commandButton value="Retrieve Endpoints..." action="{!RetrieveEndpoints}"/>
+                Reset mDS Notification URL<apex:commandButton value="Reset Notification URL..." action="{!ResetNotificationURL}"/>
+                Subscribe to Observable mDS Resources<apex:commandButton value="Subscribe..." action="{!SubscribeToObservableResources}"/>
+                Turn Page Refresh ON/OFF<apex:commandButton value="{!toggleUIState}" action="{!togglePolling}"/>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+        <apex:pageBlock id="resourceTable" title="Discovered mDS Endpoints/Resources">
+            <apex:actionRegion >
+                <apex:actionPoller action="{!RefreshResourceValues}" rerender="resourceTable" interval="5" enabled="{!polling}" />
+                    <apex:pageBlockTable value="{!myResources}" var="res" >
+                        <apex:column headerValue="Endpoint Name" value="{!res.endpoint_name__c}"/>
+                        <apex:column headerValue="Resource URI" value="{!res.Name}"/>
+                        <apex:column headerValue="Resource Value">
+                            <apex:inputText id="resourceValue" value="{!res.payload__c}" />
+                            <apex:commandButton value="GET" action="{!GetResourceValue}" rerender="resourceTable"> 
+                                <apex:param name="resourceId" value="{!res.Id}" assignTo="{!resourceId}" />
+                            </apex:commandButton>
+                            <apex:commandButton value="PUT" action="{!PutResourceValue}" rerender="resourceTable"> 
+                                <apex:param name="resourceId" value="{!res.Id}" assignTo="{!resourceId}" />
+                            </apex:commandButton>
+                       </apex:column>
+                       <apex:column headerValue="Observable Resource" value="{!res.observable__c}"/>
+                    </apex:pageBlockTable>
+                    <apex:pageBlock title="mDS Debug Output">
+            			<apex:pageBlockSection >
+                    		EventHandler Type:JSON:Status: <apex:outputText value="{!RestDebug}" style="width:800px"/>
+                    	</apex:pageBlockSection>
+                    </apex:pageBlock>
+             </apex:actionRegion>
+        </apex:pageBlock>
+    </apex:form>
+</apex:page>

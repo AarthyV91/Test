@@ -1,0 +1,51 @@
+<!-- PDF PAGE -->
+<apex:page controller="ApexClassOptimizerController2" showHeader="false" standardStylesheets="false" applyHTMLTag="false" renderAs="pdf"  >
+<head>
+<style>
+body
+{
+    font-family: font-family: Arial,Helvetica,sans-serif;
+    font-size: 11px;
+}
+.alignCenter
+{
+    text-align:center;
+    padding:2px;
+}
+@page
+{
+    size: landscape;
+}
+.headerStyle {
+background: #3C85A3 !important; 
+color: white !important;
+
+}
+
+.tableContent{
+text-align:center;
+}
+.evenClass {background: #C4E3F0;}
+.oddClass {background: white;} 
+
+</style>
+</head>
+<body>
+<h2> Apex Class Details </h2>
+
+<div style="clear:both;height:25px;"></div>
+<apex:pageBlock >
+<apex:image value="/servlet/servlet.FileDownload?file={!docId}" style="width:100%;"/><br/> <br/>
+<apex:pageBlockTable value="{!apexClsWrapperMap}" var="apexClsInst" cellspacing="2" style="font-size:14px;" rowClasses="evenClass,oddClass">
+           <apex:column value="{!apexClsInst}" headerValue="Class Name" headerClass="headerStyle" styleClass="headerStyle" style="text-align:left;padding-left:5px; !important"/>
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].withoutSharingCount}" headerValue="No of Without Sharing Count"  headerClass="headerStyle" styleClass="tableContent"/>
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].seeAllDataCount}" headerValue="No Of @SEEALLDATA "  headerClass="headerStyle" styleClass="tableContent"/>
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].soqlWithoutWhereCount}" headerValue="No of SOQL without WHERE clause "  headerClass="headerStyle"  styleClass="tableContent" />
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].dmlInsLoopCount}" headerValue="No of DML inside loop "  headerClass="headerStyle"  styleClass="tableContent"/> 
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].soqlInsLoopCount}" headerValue="No of SOQL inside for loop"  headerClass="headerStyle"   styleClass="tableContent"/>
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].soqlwithNegCount}" headerValue="No of SOQL with -Ve Operator"  headerClass="headerStyle"  styleClass="tableContent" /> 
+             <apex:column value="{!apexClsWrapperMap[apexClsInst].debugStatemtCount}" headerValue="No of Debug Statements"  headerClass="headerStyle"  styleClass="tableContent" /> 
+        </apex:pageBlockTable>
+</apex:pageBlock>
+</body>
+</apex:page>

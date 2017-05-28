@@ -1,0 +1,301 @@
+<apex:page controller="ApexClassOptimizerController2" standardStylesheets="false" id="pageId" >
+    <script type="text/javascript" src="https://canvg.googlecode.com/svn/trunk/rgbcolor.js"></script> 
+    <script type="text/javascript" src="https://canvg.googlecode.com/svn/trunk/canvg.js"></script>
+    <script type="text/javascript" src="https://github.com/niklasvh/html2canvas/releases/download/0.4.1/html2canvas.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script> 
+    <style type="text/css">
+        .custPopup{
+            background-color: white;
+            border-width: 2px;
+            border-style: solid;
+            z-index: 9999;
+            left: 50%;
+            padding:10px;
+            position: absolute;
+            /* These are the 3 css properties you will need to change so the popup 
+            displays in the center of the screen. First set the width. Then set 
+            margin-left to negative half of what the width is. You can add 
+            the height property for a fixed size pop up if you want.*/
+            width: 500px;
+            margin-left: -250px;
+            top:100px;
+        }
+        .popupBackground{
+            background-color:black;
+            opacity: 0.20;
+            filter: alpha(opacity = 20);
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 9998;
+        }        
+        .bPageBlock {
+            border-top-color:#f3f3ec !important;
+        }
+        #loading {
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+            position: fixed;
+            display: block;
+            opacity: 1;
+            background-color: white;
+            z-index: 99;
+            text-align: center;
+        }
+        #loading-image {
+            position: absolute;
+            top: 245px;
+            left: 50%;
+            z-index: 100;
+        }
+    </style>
+    <apex:form id="form1">
+        <apex:pageBlock >
+        <!--  PAGE LOADER ---->
+        <div id="loading" style="display: none;" >
+            <img id="loading-image" src="{!$Resource.Preloader}" alt="Loading..."  />
+        </div>
+        
+         <!-- MODAL BOX TO SELECT TIME OPTIONS ---->
+        <apex:outputPanel id="tstpopup" rendered="{!displayPopUp}">
+            <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+            <apex:outputPanel styleClass="custPopup" layout="block">
+                <apex:pageMessages id="showmsg"></apex:pageMessages>
+                <apex:outputLabel value="Select a time frame" for="selectedId" style="font-weight:bold;" /> &nbsp; &nbsp; 
+                <apex:SelectList value="{!selectedtime}" id="selectedId" multiselect="false" size="1" >
+                    <apex:SelectOptions value="{!timeOptionsList}" />
+                </apex:SelectList>  &nbsp; &nbsp; 
+                <apex:commandButton value="Submit" action="{!submit}" reRender="form1" oncomplete=" renderChart({!listSize }, {!totalWithoutSharingCount},{!totalSeeAllDataCount},{!totalWhereClauseCount},{!totalDmlInsLoopCount},{!totalSoqlInsLoopCount},{!totalsoqlwithNegCount},{!totaldebugStatemtCount});" />
+            </apex:outputPanel>
+        </apex:outputPanel>
+        <!-- END OF MODAL BOX ---->
+        
+        <!-- Chart will be drawn in this Div, hiding the same as it is not required to be shown -->
+        
+        <!-- CHART GENERATION SECTION ----->
+        <div id="chart_div" style=" " > 
+            <span id="id1" style="float: left;" />
+            <span id="id2"  style="float: left;"  />
+            <span id="id3"  style="float: left;"  />
+            <span id="id4"  style="float: left;"  />
+            <span id="id5"  style="float: left;"  />
+            <span id="id6"  style="float: left;" />
+            <span id="id7"  style="float: left;"/>
+        </div> <br/> <br/>
+        <!-- END OF CHART GENERATION SECTION ----->
+        
+        
+        <apex:commandButton value="Generate PDF" rerender="form1" onclick="toImg(document.getElementById('chart_div'), document.getElementById('img_div'),'{!selectedtime}');return false;" rendered="{!NOT(displayPopUp)}" style="margin-left:407px;" />
+        <!-- <apex:actionStatus id="pdfGenerationStatus">
+            <apex:facet name="start">
+                <div class="waitingSearchDiv" id="el_loading" style=" height: 100%;opacity:1;width:100%;"> 
+                  <div class="waitingHolder" style=" top:115.2px !important; width: 91px;" />
+                </div>
+            </apex:facet>
+        </apex:actionStatus>  -->
+        </apex:pageBlock>  
+
+        <!-- EACH CHARTS CONVERTING TO IMAGE -->
+        <div id="img_div" style="z-index: 10;" />
+        <!-- ALL CHARTS CONVERTING TO IMAGE -->
+        <div id="img-out" />
+        
+    </apex:form>  
+    <!-- IMAGE CONVERSION SCRIPT -->
+    <script>
+      
+        /*** CHART AS IMAGE USING CANVAS IMAGE CONVERSION *****/
+        function getImgData(chartContainer,chartArea) {
+        
+            var svg = chartArea.innerHTML;
+            var doc = chartContainer.ownerDocument;
+            var canvas = doc.createElement('canvas');
+            canvas.setAttribute('width', chartArea.offsetWidth);
+            canvas.setAttribute('height', chartArea.offsetHeight);
+            canvas.setAttribute(
+                'style',
+                'position: relative; ');
+            doc.body.appendChild(canvas);
+            canvg(canvas, svg);
+            var imgData = canvas.toDataURL("image/png");
+            canvas.parentNode.removeChild(canvas);
+            return imgData;
+        }
+       
+        /*** IMAGE CONVERSION ON CLICK OF PDF GENERATION ********/
+        function toImg(chartContainer, imgContainer, selectedTime) { 
+          
+            document.getElementById('{!$Component.pageId.form1}').style.opacity = "0.2";
+            $('#loading').show();         
+            var i;
+            for( i = 0 ; i <= 6 ; i++ ) {
+                var chartArea = document.getElementsByTagName('svg')[i];
+                var doc = chartContainer.ownerDocument;
+                var img = doc.createElement('img');
+                img.src = getImgData(chartContainer,chartArea.parentNode);
+                imgContainer.appendChild(img);
+            }
+            saveasImage(selectedTime);
+        }
+     
+        /**** CONVERTED IMAGE SAVED IN DOCUMENT ******/
+        function saveasImage(selectedTime) { 
+        
+            html2canvas($("#img_div"), {
+                onrendered: function(canvas) {
+                    theCanvas = canvas;
+                    document.body.appendChild(canvas);
+                   
+                    // Convert and download as image 
+                    //Canvas2Image.saveAsPNG(canvas); 
+                    $("#img-out").append(canvas);
+                    // Clean up 
+                    var imgData = canvas.toDataURL();
+                    
+                    Visualforce.remoting.Manager.invokeAction  ( '{!$RemoteAction.ApexClassOptimizerController2.insertChartImage}', imgData, 
+                        function(result, event) {
+                            if(result != null && result != 'ERROR') {
+                                window.location.href = '/apex/ChartPagePDF?docId='+result+'&time='+selectedTime;
+                            }
+                        }, 
+                        {escape: true}
+                    ); 
+                }
+            });
+        }
+    </script>
+    <!-- END OF IMAGE CONVERSION SCRIPT -->
+    
+    <!-- CHART GENERATIOJN USING GOOGLE CHARTS SCRIPT---->
+    <script type="text/javascript">
+    
+        function renderChart(listSize ,totalWithoutSharingCount,totalSeeAllDataCount,totalWhereClauseCount,totalDmlInsLoopCount,totalSoqlInsLoopCount,totalsoqlwithNegCount,totaldebugStatemtCount) {
+            
+            if(listSize > 0) {         
+                google.charts.load('current', {'packages':['gauge']});
+                google.charts.setOnLoadCallback(drawChart);
+                
+                function drawChart() {
+                  
+                    var data1 = google.visualization.arrayToDataTable([
+                                ['Label', 'Value'],
+                                ['Without Sharing', totalWithoutSharingCount],
+                    ]);
+                      
+                    var options1 = { width: 150, height: 180,
+                        redFrom: 2, redTo: listSize,
+                        yellowFrom: 1, yellowTo: 3,
+                        greenFrom : 0, greenTo: 1,
+                        max : listSize,
+                        min: 0,
+                        minorTicks: 2
+                       
+                    };
+                    var chart1 = new google.visualization.Gauge(document.getElementById('id1'));
+                    chart1.draw(data1, options1);    
+                   
+                    var data2 = google.visualization.arrayToDataTable([
+                                ['Label', 'Value'],
+                                ['@SeeAllData', totalSeeAllDataCount],
+                    ]);
+                    var options2 = {width: 150, height: 180,
+                                    redFrom: 0, redTo: listSize,
+                                    yellowFrom: 2, yellowTo: 4,
+                                    greenFrom : 0, greenTo: 2,
+                                    max : listSize ,
+                                    min: 0,
+                                    minorTicks: 5
+                    };
+                    var chart2 = new google.visualization.Gauge(document.getElementById('id2'));
+                    chart2.draw(data2, options2);
+                
+                   
+                    var data3 = google.visualization.arrayToDataTable([
+                                ['Label', 'Value'],
+                                ['SOQL W/O WHERE', totalWhereClauseCount],
+                    ]);
+                    var options3 = { width: 150, height: 180,
+                                    redFrom: 5, redTo: listSize,
+                                    yellowFrom: 3, yellowTo: 5,                        
+                                    greenFrom : 0, greenTo: 2, 
+                                    max : listSize,                      
+                                    min: 0,
+                                    minorTicks: 5
+                    };
+                    var chart3 = new google.visualization.Gauge(document.getElementById('id3'));
+                    chart3.draw(data3, options3);
+                    
+                   
+                    var data4 = google.visualization.arrayToDataTable([
+                                ['Label', 'Value'],
+                                ['DML inside Loop', totalDmlInsLoopCount],
+                    ]);
+                    var options4 = { width: 150, height: 180,
+                                    redFrom: 2, redTo: listSize,
+                                    yellowFrom: 1, yellowTo: 2,
+                                    greenFrom : 0, greenTo: 0,
+                                    max : listSize ,
+                                    min: 0,
+                                    minorTicks: 5
+                    };
+                    var chart4 = new google.visualization.Gauge(document.getElementById('id4'));
+                    chart4.draw(data4, options4);
+                        
+                   
+                    var data5 = google.visualization.arrayToDataTable([
+                                ['Label', 'Value'],
+                                ['SOQL inside Loop',totalSoqlInsLoopCount],
+                    ]);
+                    var options5 = { width: 150, height: 180,
+                                    redFrom: 2, redTo:listSize,
+                                    yellowFrom: 1, yellowTo: 2,
+                                    greenFrom : 0, greenTo: 0,
+                                    max : listSize,
+                                    min: 0,
+                                    minorTicks: 5
+                    };
+                    var chart5 = new google.visualization.Gauge(document.getElementById('id5'));
+                    chart5.draw(data5, options5);
+        
+                   
+                    var data6 = google.visualization.arrayToDataTable([
+                                ['Label', 'Value'],
+                                ['SOQL with -Ve', totalsoqlwithNegCount],
+                    ]);
+                    var options6 = { width: 150, height: 180,
+                                    redFrom: 2, redTo: listSize,
+                                    yellowFrom: 1, yellowTo: 2,
+                                    greenFrom : 0, greenTo: 1,
+                                    max : listSize,
+                                    min: 0,
+                                    minorTicks: 5
+                    };        
+                    var chart6 = new google.visualization.Gauge(document.getElementById('id6'));
+                    chart6.draw(data6, options6);
+                    
+                    var data7 = google.visualization.arrayToDataTable([
+                                ['Label', 'Value'],
+                                ['Debug Statements', totaldebugStatemtCount],
+                    ]);
+                    var options7 = { width: 150, height: 180,
+                                    redFrom: 15, redTo: listSize,
+                                    yellowFrom: 5, yellowTo: 15,
+                                    greenFrom : 0, greenTo: 5,
+                                    max : listSize,
+                                    min: 0,
+                                    minorTicks: 5
+                   };
+                    var chart7 = new google.visualization.Gauge(document.getElementById('id7'));
+                    chart7.draw(data7, options7);
+      
+                }
+            }          
+        }
+    </script>
+    <!-- END OF CHART GENERATION SCRIPT --------->     
+</apex:page>

@@ -1,0 +1,68 @@
+<!-- PDF PAGE -->
+<apex:page controller="ApexClassOptimizerController2" showHeader="false" standardStylesheets="false" applyHTMLTag="false" renderAs="pdf" >
+<head>
+<style>
+body
+{
+    font-family: font-family: Arial,Helvetica,sans-serif;
+    font-size: 11px;
+}
+  div.header {
+ padding: 15px;
+position: running(header);
+}
+
+
+@page
+{
+    size: landscape;
+   @top-left-corner {
+   content: element(header);
+   }
+     @bottom-left {
+         content: element(footer);
+     }
+}
+  div.footer {
+   display: block;
+   padding: 5px;
+    position: running(footer);
+}
+.pagenumber:before {
+    content: counter(page);
+}
+.pagecount:before {
+content: counter(pages);
+}
+
+.headerStyle {
+background: #3C85A3 !important; 
+color: white !important;
+
+}
+
+
+
+</style>
+</head>
+<body>
+     <div class="header"> 
+         <apex:image value="{!$Resource.tcslogo}" width="1030px;" height="80px" />
+     </div>
+         <div class="content" >
+         
+         </div>
+
+              
+
+          
+          <div class="footer">
+
+                <div>Page <span class="pagenumber"/> of <span class="pagecount"/></div>
+
+          </div>
+
+<div style="clear:both;height:25px;"></div>
+
+</body>
+</apex:page>

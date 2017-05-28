@@ -1,0 +1,7 @@
+<apex:page controller="PegaShowGadgetController">
+<apex:form id="pageForm">
+<apex:outputPanel >
+<PegaPE:pegaGadgetComponent customParameters="{!pegaCustomParameters}"/>
+</apex:outputPanel>
+</apex:form>
+</apex:page>

@@ -1,0 +1,14 @@
+<apex:page renderAs="pdf">
+
+  <div id="chart_div" > 
+     <apex:image value="{!$CurrentPage.parameters.img1}" />
+     <apex:image value="{!$CurrentPage.parameters.img2}" />
+     <apex:image value="{!$CurrentPage.parameters.img3}" />
+     <apex:image value="{!$CurrentPage.parameters.img4}" />
+     <apex:image value="{!$CurrentPage.parameters.img5}" />
+     <apex:image value="{!$CurrentPage.parameters.img6}" />
+     <apex:image value="{!$CurrentPage.parameters.img7}" />
+
+    </div> 
+
+</apex:page>

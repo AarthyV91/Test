@@ -1,0 +1,57 @@
+<apex:page applyHtmlTag="true" docType="html-5.0"  sidebar="false" showHeader="false">
+  <style>
+  .searchBox {
+      border-radius : 4px;
+      vertical-align : middle;
+      width : 50%;
+      font-size : 18px;
+      resize: none;
+  }
+  .divclass {
+    font-size : 26px !important;
+    margin : 50px;
+    color : #069;
+  }
+  .my-panel-header-text{
+      padding: 5px 5px 8px 12px;
+      margin-left: 0px;
+      font-size: 12px;
+      line-height: 17px;
+      color: #333;
+      font-family: arial;
+      font-weight: normal;
+      cursor: pointer;
+      display: block;
+      background: url(https://help.salesforce.com/resource/1439601841000/HTStaticRes/imagese/images/sidebar_top_right.gif) no-repeat right top;
+  }
+  #ext-gen8{
+      background: #B5E4F6; 
+      overflow: hidden;
+      zoom: 1;
+  }
+  
+  
+  </style>
+  <div class="divclass" >  
+       Help 
+      <div>
+          <textarea placeholder="Search System Guide" class="searchBox"></textarea>
+      </div>
+  </div>
+  
+  <div id="sidebar" style="float: left; width: 19%; text-align: left; padding-left:15px">
+    <div id="ext-comp-1001" class="mypanel" style="width: 100%;">
+        <div class="" id="ext-gen3">
+            <div class="x-tool x-tool-toggle " id="ext-gen7">&nbsp;</div>
+                <span class="my-panel-header-text" id="ext-gen8">Browse Help</span>
+             </div>
+             <div class="my-panel-bwrap" id="ext-gen4">
+                 <div class="my-panel-body my-panel-body-noborder" id="ext-gen5">
+                     <div id="container1">
+                      <div id="container3tree">
+                         <iframe id="ht_Toc_Tree" frameborder="0" scrolling="auto" width="100%" height="380px" style="border-width: 0px; height: 753px;" src="/apex/HelpTree"></iframe>
+                       </div></div></div>
+                       <div class="my-panel-footer my-panel-footer-noborder" id="ext-gen6"><span></span>
+                       </div></div></div></div>
+  
+</apex:page>

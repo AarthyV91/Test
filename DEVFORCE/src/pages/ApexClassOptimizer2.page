@@ -1,0 +1,21 @@
+<apex:page controller="ApexClassOptimizerController2">
+     <apex:pageBlock >
+        <apex:pageBlockTable value="{!apexClsWrapperMap}" var="apexClsInst">
+           <apex:column value="{!apexClsInst}" headerValue="Class Name"/>
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].withoutSharingCount}" headerValue="Class Name"/>
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].seeAllDataCount}" headerValue="No Of @SEEALLDATA "/>
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].soqlWithoutWhereCount}" headerValue="No of SOQL without WHERE clause "/>
+            <!-- <apex:column value="{!apexClsWrapperMap[apexClsInst].dmlInsLoopCount}" /> -->
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].soqlInsLoopCount}" headerValue="No of SOQL inside for loop"/>
+            <apex:column value="{!apexClsWrapperMap[apexClsInst].soqlwithNegCount}" headerValue="No of SOQL with -Ve Operator" /> 
+        </apex:pageBlockTable>
+        <apex:pageBlockSection columns="5">
+            <apex:outputLabel value="Total Count"> </apex:outputLabel>
+            <apex:outputLabel value="{!totalWithoutSharingCount}"> </apex:outputLabel>
+            <apex:outputLabel value="{!totalSeeAllDataCount}"> </apex:outputLabel>
+            <apex:outputLabel value="{!totalWhereClauseCount }"> </apex:outputLabel>
+            <apex:outputLabel value="{!totalSoqlInsLoopCount }"> </apex:outputLabel> 
+            <apex:outputLabel value="{!totalsoqlwithNegCount }"> </apex:outputLabel> 
+        </apex:pageBlockSection>      
+     </apex:pageBlock>
+</apex:page>

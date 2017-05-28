@@ -1,0 +1,18 @@
+<!-- LANDING PAGE WHICH INITIATES THE ACTION -->
+<apex:page controller="ApexClassOptimizerController2">
+<style>
+.alignCenter
+{
+    text-align:center; 
+    padding:2px;
+}
+</style>
+<apex:sectionHeader title="Opportunity Table"/>
+<apex:form >
+<p style="text-align:center;">
+    <apex:outputLink value="{!$Page.GoogleCharts}" style="padding: 5px;text-decoration: none;" styleclass="btn">
+        <apex:outputText value="See the beautiful chart in PDF!"/>
+    </apex:outputLink>
+</p>
+</apex:form>
+</apex:page>

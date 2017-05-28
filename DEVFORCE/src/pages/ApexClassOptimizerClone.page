@@ -1,0 +1,7 @@
+<apex:page controller="ApexClassOptimizerController">
+    <apex:chart height="250" width="450" animate="true" data="{!data}">
+    <apex:axis type="Gauge" position="gauge" title="Transaction Load"
+        minimum="0" maximum="10" steps="10"/>
+    <apex:gaugeSeries dataField="data" donut="50" colorSet="#78c953,#ddd"/>
+</apex:chart>
+</apex:page>
